@@ -8,6 +8,7 @@ public:
     vector<int> twoSum(vector<int>& nums, int target) {
         unordered_map<int, int> hashmap;
         for(int i=0;i<nums.size();++i){
+            // 二重循环的内部循环, 替换成哈希表,O(1)
             auto it = hashmap.find(target-nums[i]);
             if(it==hashmap.end()){
                 hashmap.emplace(nums[i],i);
