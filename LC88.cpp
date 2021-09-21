@@ -3,7 +3,7 @@ using std::vector;
 
 class Solution {
 public:
-    void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+    void merge(vector<int> &nums1, int m, vector<int> &nums2, int n) {
         if (m == 0) {
             nums1.swap(nums2);
             return;
@@ -18,16 +18,13 @@ public:
             if (i >= m) {
                 temp[k] = nums2[j];
                 ++j;
-            }
-            else if (j >= n) {
+            } else if (j >= n) {
                 temp[k] = nums1[i];
                 ++i;
-            }
-            else if (nums1[i] <= nums2[j]) {
+            } else if (nums1[i] <= nums2[j]) {
                 temp[k] = nums1[i];
                 ++i;
-            }
-            else {
+            } else {
                 temp[k] = nums2[j];
                 ++j;
             }
