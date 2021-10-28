@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.m": "plaintext",
+        "atomic": "cpp",
+        "typeinfo": "cpp",
+        "vector": "cpp"
+    }
+}
