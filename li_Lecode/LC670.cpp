@@ -1,6 +1,4 @@
-#include <algorithm>
-#include <functional>
-#include <vector>
+#include <bits/stdc++.h>
 using std::vector;
 
 class Solution {
@@ -10,31 +8,26 @@ public:
       return num;
     }
 
-    std::vector<int> digit_vec;
-    for (int remain = num; remain > 0; remain /= 10) {
-      digit_vec.emplace_back(remain % 10);
-    }
-    std::reverse(digit_vec.begin(), digit_vec.end());
-    vector<int> sorted_vec = digit_vec;
-    std::sort(sorted_vec.begin(), sorted_vec.end(), std::greater<int>());
+    std::string digit_str = std::to_string(num);
+    std::string sorted_str = digit_str;
+    std::sort(sorted_str.begin(), sorted_str.end(), std::greater<int>());
 
-    for (int i = 0, swap_i = -1; i < digit_vec.size(); ++i) {
-      if (swap_i == -1 && digit_vec[i] != sorted_vec[i]) {
-        swap_i = i;
+    int k=-1, j=-1;
+    for (int i = 0; i < digit_str.size(); ++i) {
+      if (k == -1 && digit_str[i] != sorted_str[i]) {
+        k = i;
         continue;
       }
-      if (swap_i != -1 && digit_vec[i] == sorted_vec[swap_i]) {
-        digit_vec[i] = digit_vec[swap_i];
-        digit_vec[swap_i] = sorted_vec[swap_i];
-        break;
+      if (k != -1 && digit_str[i] == sorted_str[k]) {
+        j=i;
       }
     }
 
-    int res = 0, times = 1;
-    for (auto it = digit_vec.rbegin(); it != digit_vec.rend(); ++it) {
-      res += *it * times;
-      times *= 10;
+    if(-1==k){
+      return num;
     }
-    return res;
+    digit_str[j] = digit_str[k];
+    digit_str[k] = sorted_str[k];
+    return std::stoi(digit_str);
   }
 };
