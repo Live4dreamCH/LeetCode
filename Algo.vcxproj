@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="2.cpp" />
     <ClCompile Include="KMP.cpp" />
     <ClCompile Include="LC1366.cpp" />
     <ClCompile Include="LC1367.cpp" />
