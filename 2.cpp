@@ -29,4 +29,5 @@ int step_count(string& bin_str) {
 		}
 
 	}
+	return 0;
 }
