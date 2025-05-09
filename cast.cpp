@@ -1,4 +1,5 @@
 #include "MyLib.h"
+#include <thread>
 class Base {
 public:
   int val_b;
@@ -76,10 +77,14 @@ int main() {
     std::cout << std::hex << reinterpret_cast<long long>(&b) << '\n';
   }
 
-  std::shared_ptr<int> share_ptr = std::make_shared<int>(1);
-  *share_ptr += 1;
-  std::shared_ptr<int> s_p;
-  s_p = share_ptr;
+  std::thread t1([]() {
+    std::shared_ptr<int> share_ptr = std::make_shared<int>(1);
+    *share_ptr += 1;
+    std::shared_ptr<int> s_p;
+    s_p = share_ptr;
+    std::cout << "thread 1\n";
+  });
+  t1.join();
 
   return 0;
 }
