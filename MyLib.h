@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <array>
 #include <bitset>
+#include <format>
+#include <functional>
 #include <iostream>
 #include <map>
 #include <memory>
