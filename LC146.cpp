@@ -4,115 +4,81 @@ class LRUCache {
     struct Node {
         int k;
         int val;
-        size_t next;
+        int next;
+        int prev;
     };
 
     std::vector<Node> _data;
-    std::unordered_map<int, size_t> key_prev_pos_map;
-    int tail_key;
+    std::unordered_map<int, int> key_pos_map;
 
-    void visit(decltype(key_prev_pos_map)::iterator& prev_it) {
-        if (0 == prev_it->second) {
+    void visit(decltype(key_pos_map)::iterator& curr_it) {
+        const int& curr_index = curr_it->second;
+        Node& curr = _data[curr_index];
+        if (0 == curr.prev) {
             return;
         }
-        Node& prev = _data[prev_it->second];
-        Node& curr = _data[prev.next];
-        size_t curr_index = prev.next;
+
+        Node& prev = _data[curr.prev];
+        Node& nxt = _data[curr.next];
         prev.next = curr.next;
+        nxt.prev = curr.prev;
+
+        Node& new_nxt = _data[_data[0].next];
         curr.next = _data[0].next;
+        new_nxt.prev = curr_index;
+        curr.prev = 0;
         _data[0].next = curr_index;
-
-        auto it_curr = key_prev_pos_map.find(_data[curr.next].k);
-        if (key_prev_pos_map.end() != it_curr) {
-            it_curr->second = curr_index;
-        }
-        auto it_next = key_prev_pos_map.find(_data[prev.next].k);
-        if (key_prev_pos_map.end() != it_next) {
-            it_next->second = prev_it->second;
-        }
-        prev_it->second = 0;
-
-        if (tail_key == curr.k) {
-            tail_key = prev.k;
-        }
     }
 
    public:
-    LRUCache(int capacity) {
-        _data.resize(capacity + 1);
-        tail_key = -1;
-    }
+    LRUCache(int capacity) { _data.resize(capacity + 1); }
 
     int get(int key) {
-        auto it = key_prev_pos_map.find(key);
-        if (key_prev_pos_map.end() == it) {
+        auto it = key_pos_map.find(key);
+        if (key_pos_map.end() == it) {
             return -1;
         }
-
-        Node& prev = _data[it->second];
-        Node& curr = _data[prev.next];
-
         visit(it);
-        // if (0 == it->second) {
-        //     return curr.val;
-        // }
 
-        // size_t curr_index = prev.next;
-        // prev.next = curr.next;
-        // curr.next = _data[0].next;
-        // _data[0].next = curr_index;
-
-        // key_prev_pos_map[_data[curr.next].k] = curr_index;
-        // key_prev_pos_map[_data[prev.next].k] = it->second;
-        // it->second = 0;
-
-        // if (tail_key == key) {
-        //     tail_key = prev.k;
-        // }
-
+        Node& curr = _data[it->second];
         return curr.val;
     }
 
     void put(int key, int value) {
         // find key
-        auto it = key_prev_pos_map.find(key);
-        if (key_prev_pos_map.end() != it) {
-            Node& prev = _data[it->second];
-            Node& curr = _data[prev.next];
+        auto it = key_pos_map.find(key);
+        if (key_pos_map.end() != it) {
+            Node& curr = _data[it->second];
             curr.val = value;
             visit(it);
             return;
         }
 
-        // todo: first time cannot find tail_key
-        auto it_old_tail = key_prev_pos_map.find(tail_key);
-        if (key_prev_pos_map.end() == it_old_tail) {
-            std::cerr << std::format("tail_key={} not in map!\n", tail_key);
-            exit(0);
-            return;
-        }
-        Node& prev = _data[it_old_tail->second];
-        Node& curr = _data[prev.next];
-
         // append key
-        int prev_n = key_prev_pos_map.size();
-        if (prev_n + 1 < _data.size()) {
-            curr.next = prev_n + 1;
-            _data[prev_n + 1].k = key;
-            _data[prev_n + 1].val = value;
-            auto [it_new, _] = key_prev_pos_map.emplace(key, prev.next);
-            tail_key = key;
-            visit(it_new);
+        if (key_pos_map.size() + 1 < _data.size()) {
+            const int curr_index = key_pos_map.size() + 1;
+            Node& curr = _data[curr_index];
+            curr.k = key;
+            curr.val = value;
+            curr.next = _data[0].next;
+            curr.prev = 0;
+
+            Node& nxt = _data[curr.next];
+            nxt.prev = curr_index;
+
+            _data[0].next = curr_index;
+
+            key_pos_map.emplace(key, curr_index);
             return;
         }
 
         // replace tail
-
+        const int curr_index = _data[0].prev;
+        Node& curr = _data[curr_index];
+        size_t cnt = key_pos_map.erase(curr.k);
         curr.k = key;
         curr.val = value;
-        auto [it_new, _] = key_prev_pos_map.emplace(key, it_old_tail->second);
-        key_prev_pos_map.erase(it_old_tail);
-        tail_key = key;
+        auto [it_new, _] = key_pos_map.emplace(key, curr_index);
         visit(it_new);
     }
 };
