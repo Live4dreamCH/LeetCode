@@ -8,6 +8,7 @@
                 "--std=c++2a",
                 "-g",
                 "${file}",
+                // "-O2",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}.out"
             ],
